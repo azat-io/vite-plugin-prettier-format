@@ -101,8 +101,8 @@ describe('vite-plugin-prettier-format', () => {
     ] as Dirent[]
 
     vi.mocked(fs.readdir)
-      .mockResolvedValueOnce(mockEntries)
-      .mockResolvedValueOnce(mockSubEntries)
+      .mockResolvedValueOnce(mockEntries as unknown as Dirent<Buffer>[])
+      .mockResolvedValueOnce(mockSubEntries as unknown as Dirent<Buffer>[])
 
     vi.mocked(fs.readFile)
       .mockResolvedValueOnce('const a = 1;')
@@ -184,10 +184,16 @@ describe('vite-plugin-prettier-format', () => {
     ] as Dirent[]
 
     vi.mocked(fs.readdir)
-      .mockResolvedValueOnce(mockLevel1)
-      .mockResolvedValueOnce(mockLevel2Directory1)
-      .mockResolvedValueOnce(mockLevel2Directory2)
-      .mockResolvedValueOnce(mockLevel3Directory3)
+      .mockResolvedValueOnce(mockLevel1 as unknown as Dirent<Buffer>[])
+      .mockResolvedValueOnce(
+        mockLevel2Directory1 as unknown as Dirent<Buffer>[],
+      )
+      .mockResolvedValueOnce(
+        mockLevel2Directory2 as unknown as Dirent<Buffer>[],
+      )
+      .mockResolvedValueOnce(
+        mockLevel3Directory3 as unknown as Dirent<Buffer>[],
+      )
 
     vi.mocked(fs.readFile).mockResolvedValue('dummy content')
     vi.mocked(prettier.resolveConfig).mockResolvedValue({})
@@ -232,7 +238,7 @@ describe('vite-plugin-prettier-format', () => {
         isFile: () => true,
         name: 'bad.js',
       } as unknown as Dirent,
-    ])
+    ] as unknown as Dirent<Buffer>[])
 
     vi.mocked(fs.readFile).mockRejectedValueOnce(
       new Error('Failed to read file'),
@@ -260,7 +266,7 @@ describe('vite-plugin-prettier-format', () => {
         isFile: () => false,
         isFIFO: () => true,
       } as unknown as Dirent,
-    ])
+    ] as unknown as Dirent<Buffer>[])
 
     vi.mocked(path.resolve).mockReturnValueOnce('dist')
 

@@ -4,24 +4,7 @@ import { resolveConfig, format } from 'prettier'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-let getAllFiles = async (directory: string): Promise<string[]> => {
-  let entries = await fs.readdir(directory, { withFileTypes: true })
-
-  let childPathsPromises = entries.map(async entry => {
-    let filePath = path.join(directory, entry.name)
-    if (entry.isDirectory()) {
-      return getAllFiles(filePath)
-    } else if (entry.isFile()) {
-      return [filePath]
-    }
-    return []
-  })
-
-  let nestedPaths = await Promise.all(childPathsPromises)
-  return nestedPaths.flat()
-}
-
-export let prettierFormat = (): Plugin => {
+export function prettierFormat(): Plugin {
   let outputDirectory: string = 'dist'
   return {
     closeBundle: async () => {
@@ -53,4 +36,21 @@ export let prettierFormat = (): Plugin => {
     },
     name: 'vite-plugin-prettier-format',
   }
+}
+
+async function getAllFiles(directory: string): Promise<string[]> {
+  let entries = await fs.readdir(directory, { withFileTypes: true })
+
+  let childPathsPromises = entries.map(async entry => {
+    let filePath = path.join(directory, entry.name)
+    if (entry.isDirectory()) {
+      return getAllFiles(filePath)
+    } else if (entry.isFile()) {
+      return [filePath]
+    }
+    return []
+  })
+
+  let nestedPaths = await Promise.all(childPathsPromises)
+  return nestedPaths.flat()
 }
